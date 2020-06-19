@@ -1,0 +1,9 @@
+{"namespace": "com.ballaci.model",
+ "type": "record",
+ "name": "Event",
+ "fields": [
+     {"name": "id", "type": "string", "doc": "the id of the event"},
+     {"name": "type", "type": "string", "doc": "the type of the event"},
+     {"name": "ts", "type": "string", "logicalType": "time-millis", "doc": "the creation time"}
+ ]
+}
