@@ -15,6 +15,13 @@ spring:
         output:
           destination: my-event
           content-type: application/*+avro
+        splitStream-in-0:
+          destination: my-event
+          content-type: application/*+avro
+          group: group-streams
+        splitStream-out-0:
+          destination: my-event-type1
+          content-type: application/*+avro
       kafka:
           binder:
            brokers: localhost:31091
@@ -27,4 +34,16 @@ spring:
              value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
              schema.registry.url: http://localhost:32090
              specific.avro.reader: true
+          streams:
+            binder:
+              configuration:
+                default.key.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+                default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+                schema.registry.url: http://localhost:32090
+              functions.splitStream.applicationId: TheStreamSplitter
+              functions.splitStream.groupId: myGroupId
+
+
+debug: false
+
                            
