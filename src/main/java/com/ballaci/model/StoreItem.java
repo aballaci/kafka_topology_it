@@ -1,5 +1,7 @@
 package com.ballaci.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -8,6 +10,9 @@ import java.util.Set;
 public class StoreItem {
 
     private static long TTL_IN_MILS = 5_000L;
+
+    public StoreItem() {
+    }
 
     public StoreItem(OcrReadyEvent event) {
         this.addEvent(event);
@@ -18,7 +23,6 @@ public class StoreItem {
     private Set<OcrReadyEvent> events = new HashSet<>();
 
     private int totalMessages;
-
     private long creationTime;
 
 
@@ -42,6 +46,8 @@ public class StoreItem {
         event.setStatus(this.isComplete());
         return event;
     }
+
+
 
     public boolean hasExpired(){
         return System.currentTimeMillis() - this.creationTime > TTL_IN_MILS;

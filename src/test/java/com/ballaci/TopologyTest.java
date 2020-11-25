@@ -3,7 +3,9 @@ package com.ballaci;
 import com.ballaci.model.OcrReadyEvent;
 import com.ballaci.model.StoreItem;
 import com.ballaci.processors.OcrEventProcessor;
+import com.ballaci.processors.OcrEventTransformer;
 import com.ballaci.processors.OcrProcessorSuplier;
+import com.ballaci.processors.OcrTransformerSuplier;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -99,9 +101,6 @@ public class TopologyTest {
       // register store
       builder.addStateStore(keyValueStoreBuilder);
 
-
-        builder.stream("ocr-aggregation", Consumed.with(new Serdes.StringSerde(), CustomSerdes.OcrReadyEvent()))
-                .process(new OcrProcessorSuplier(), "ocr-store");
 
 
 

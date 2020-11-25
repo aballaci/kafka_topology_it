@@ -63,8 +63,10 @@ public class KstreamsTest {
 
         producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref1", true))).get();
         producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref2", true))).get();
-        Thread.sleep(10000);
         producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref3", true))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref1", true))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref2", true))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref3", true))).get();
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("my-test-consumer", "true", embeddedKafka));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -80,4 +82,5 @@ public class KstreamsTest {
             assertThat(messages).isNotNull();
         });
     }
+
 }
