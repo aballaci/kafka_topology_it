@@ -64,24 +64,11 @@ public class KstreamsTest {
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
 
-//    @Autowired
-//    OcrReadyAggregator ocrReadyAggregator;
-//
-//    @Autowired
-//    OcrEventConsumer ocrEventConsumer;
-//
-//    @Autowired
-//    OcrReadyProcessor ocrReadyProcessor;
-
     @Before
-    void setUp() {
-
-
-    }
+    void setUp() {}
 
     @After
-    void tearDown() {
-    }
+    void tearDown() {}
 
     @Test
     public void test() throws InterruptedException, ExecutionException {
@@ -90,17 +77,19 @@ public class KstreamsTest {
 
 
         producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref1", true))).get();
-//        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_EADY, "doc1", new OcrReadyEvent("ref2", true)));
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref2", true)));
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref3", true)));
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafka));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
 
-        Consumer<String, OcrReadyEvent> consumer = new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new JsonDeserializer<OcrReadyEvent>(OcrReadyEvent.class)).createConsumer();
+        Consumer<String, OcrReadyEvent> consumer = new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new JsonDeserializer<>(OcrReadyEvent.class)).createConsumer();
         consumer.subscribe(Collections.singleton(TOPIC_OCR_AGG));
         System.out.println("In the test...");
-        Awaitility.await().timeout(5L, TimeUnit.SECONDS).untilAsserted(() -> {
-            ConsumerRecord<String, OcrReadyEvent> message1 = KafkaTestUtils.getSingleRecord(consumer, TOPIC_OCR_READY);
+        Awaitility.await().timeout(10L, TimeUnit.SECONDS).untilAsserted(() -> {
+            ConsumerRecord<String, OcrReadyEvent> message1 = KafkaTestUtils.getSingleRecord(consumer, TOPIC_OCR_AGG);
+            System.out.println(message1.toString());
             assertThat(message1).isNotNull();
         });
     }

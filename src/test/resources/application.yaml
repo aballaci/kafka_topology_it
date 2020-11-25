@@ -20,21 +20,22 @@ spring:
         process-out-0:
           destination: ocr-aggregated
           content-type: application/json
+#        aggregated-in-0:
+#          destination: ocr-aggregated
+#          content-type: application/json
+#          group: aggregated-consumer-group
       kafka:
           binder:
            brokers: ${spring.embedded.kafka.brokers}
           streams:
             binder:
               configuration:
-                default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
-
-
-
+                default.key.serde: org.apache.kafka.common.serialization.Serdes$ByteArraySerde
+                default.value.serde: com.ballaci.CustomSerdes$OcrReadyEventSerde
   kafka:
     consumer:
       properties:
-        spring.json.trusted.packages: "com.ballaci.model"
+        spring.json.trusted.packages: "*"
 
 
 

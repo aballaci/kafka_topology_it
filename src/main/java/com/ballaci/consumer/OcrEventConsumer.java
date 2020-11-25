@@ -4,12 +4,15 @@ import com.ballaci.model.Event;
 import com.ballaci.model.OcrReadyEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Component
+@EnableBinding(Sink.class)
 public class OcrEventConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OcrEventConsumer.class);
@@ -17,7 +20,7 @@ public class OcrEventConsumer {
     @StreamListener(Processor.INPUT)
     public void consumeEvent(OcrReadyEvent event) {
 
-        LOGGER.info("Let's process event details: {}", event);
+        LOGGER.info("Got event: {}", event);
     }
 
 }
