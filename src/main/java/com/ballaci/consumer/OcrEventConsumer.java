@@ -11,7 +11,7 @@ import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Component
+//@Component
 @EnableBinding(Sink.class)
 public class OcrEventConsumer {
 

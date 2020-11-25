@@ -36,7 +36,7 @@ public class OcrReadyProcessor {
 //                        , Materialized.with(new Serdes.StringSerde(), CustomSerdes.OcrReadyEvent())
                         )
                 .toStream()
-                .peek((k,v) -> System.out.println("***************Aggregated key" + k + "  val: " + v));
+                .peek((k,v) -> System.out.println("---------Peak after aggregation key" + k + "  val: " + v));
 
     }
 
