@@ -10,7 +10,11 @@ public class OcrReadyEvent {
     @JsonProperty
     private boolean status;
 
-    private int parts;
+    @JsonProperty
+    private int part;
+
+    @JsonProperty
+    private int total;
 
     public OcrReadyEvent() {
     }
@@ -20,18 +24,25 @@ public class OcrReadyEvent {
         this.status = status;
     }
 
-    public OcrReadyEvent(String fileRef, boolean status, int parts) {
+    public OcrReadyEvent(String fileRef, boolean status, int part) {
         this.fileRef = fileRef;
         this.status = status;
-        this.parts = parts;
+        this.part = part;
     }
 
-    public int getParts() {
-        return parts;
+    public OcrReadyEvent(String fileRef, boolean status, int part, int total) {
+        this.fileRef = fileRef;
+        this.status = status;
+        this.part = part;
+        this.total = total;
     }
 
-    public void setParts(int parts) {
-        this.parts = parts;
+    public int getPart() {
+        return part;
+    }
+
+    public void setPart(int part) {
+        this.part = part;
     }
 
     public String getFileRef() {
@@ -50,12 +61,21 @@ public class OcrReadyEvent {
         this.status = status;
     }
 
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
     @Override
     public String toString() {
         return "OcrReadyEvent{" +
                 "fileRef='" + fileRef + '\'' +
                 ", status=" + status +
-                ", parts=" + parts +
+                ", parts=" + part +
+                ", total=" + total +
                 '}';
     }
 }
