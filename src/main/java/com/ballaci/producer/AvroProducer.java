@@ -3,6 +3,7 @@ package com.ballaci.producer;
 import com.ballaci.model.Event;
 import com.ballaci.model.EventKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -13,7 +14,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 
-@Service
+
+//@Service
 public class AvroProducer {
 
     @Autowired

@@ -9,9 +9,10 @@ import org.apache.kafka.streams.kstream.Predicate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-@Service
+//@Service
 public class EventTypeSplitter {
 
     private static final String TYPE_1 = "type1";
@@ -19,20 +20,10 @@ public class EventTypeSplitter {
     @Bean
     public Function<KStream<EventKey, Event>, KStream<EventKey, Event>> splitStream() {
 
-        Predicate<EventKey, Event> isType1 = (k, v) -> TYPE_1.equals(v.getType());
+        Predicate<EventKey, Event> isOfType1 = (k, v) -> TYPE_1.equals(v.getType());
+        ForeachAction<EventKey, Event> printEventValue = (k,v) -> System.out.println(v);
         return input -> input
-                .peek(new ForeachAction<EventKey, Event>() {
-                    @Override
-                    public void apply(EventKey eventKey, Event event) {
-                        System.out.println("got event: " + event.toString());
-                    }
-                }).filter(new Predicate<EventKey, Event>() {
-                    @Override
-                    public boolean test(EventKey eventKey, Event event) {
-                        boolean isType1 = event.getType().toString().equals("type1");
-                        System.out.println(event + " type1: " + isType1 );
-                        return isType1;
-                    }
-                });
+                .peek(printEventValue)
+                .filter(isOfType1);
     }
 }

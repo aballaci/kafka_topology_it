@@ -1,0 +1,44 @@
+spring:
+  cloud:
+    stream:
+      default:
+         producer:
+          useNativeEncoding: true
+         consumer:
+          useNativeEncoding: true
+      bindings:
+        input:
+          destination: ocr-ready
+          content-type: application/json
+          group: group-test
+        output:
+          destination: ocr-aggregated
+          content-type: application/json
+        process-in-0:
+          destination: ocr-ready
+          content-type: application/json
+        process-out-0:
+          destination: ocr-aggregated
+          content-type: application/json
+      kafka:
+          binder:
+           brokers: ${spring.embedded.kafka.brokers}
+          streams:
+            binder:
+              configuration:
+                default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
+
+
+
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "com.ballaci.model"
+
+
+
+    properties:
+      spring.json.add.type.headers: false
+#debug: true
+
