@@ -2,7 +2,26 @@ package com.ballaci.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OcrReadyEvent {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class OcrReadyEvent implements Serializable {
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OcrReadyEvent event = (OcrReadyEvent) o;
+        return status == event.status &&
+                part == event.part &&
+                total == event.total &&
+                Objects.equals(fileRef, event.fileRef);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileRef, status, part, total);
+    }
 
     @JsonProperty
     private String fileRef;

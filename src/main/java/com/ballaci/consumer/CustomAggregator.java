@@ -2,29 +2,25 @@ package com.ballaci.consumer;
 
 import com.ballaci.CustomSerdes;
 import com.ballaci.model.OcrReadyEvent;
-import com.ballaci.model.StoreItem;
 import com.ballaci.processors.OcrEventTransformer;
-import com.ballaci.processors.OcrTransformerSuplier;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.kstream.TransformerSupplier;
-import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
-import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AggregatedEventsConsumer {
+public class CustomAggregator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomAggregator.class);
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -32,10 +28,11 @@ public class AggregatedEventsConsumer {
     private String stateStoreName = "ocr-store";
 
     @Bean
-    public java.util.function.Consumer<KStream<String, OcrReadyEvent>> aggregated() {
+    public java.util.function.Consumer<KStream<String, OcrReadyEvent>> customaggregator() {
 
         return input ->
                 input
+                        .peek((k,v) -> LOGGER.info("Peek in transformer: " + k + " Value: " + v))
                         .transform(new TransformerSupplier(){
 
                             @Override
@@ -43,9 +40,7 @@ public class AggregatedEventsConsumer {
                                 return new OcrEventTransformer(stateStoreName);
                             }
                         }, Named.as("cor-transformer"), stateStoreName)
-                        .foreach((key, value) -> {
-                    System.out.println("Aggregated Key: " + key + " Value: " + value);
-                });
+                        .peek((k,v) -> LOGGER.info("Done Aggregation: " + k + " Value: " + v));
     }
 
 

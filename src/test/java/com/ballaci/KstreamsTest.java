@@ -61,12 +61,13 @@ public class KstreamsTest {
         Producer<String, OcrReadyEvent> producer = new DefaultKafkaProducerFactory<>(produserConfig, new StringSerializer(), new JsonSerializer<OcrReadyEvent>()).createProducer();
 
 
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref1", true))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref2", true))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref3", true))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref1", true))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref2", true))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref3", true))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref1", true, 1, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref2", true,2, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref3", true,3, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref1", true,1, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref2", true,2, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref3", true,3, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc3", new OcrReadyEvent("refx", true,1, 1))).get();
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("my-test-consumer", "true", embeddedKafka));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");

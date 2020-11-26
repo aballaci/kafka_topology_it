@@ -2,12 +2,14 @@ package com.ballaci.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class StoreItem {
+public class StoreItem implements Serializable {
 
     private static long TTL_IN_MILS = 5_000L;
 
@@ -27,10 +29,7 @@ public class StoreItem {
 
 
     public boolean addEvent(OcrReadyEvent event){
-        if(event.getTotal() != this.getTotalMessages()){
-            System.out.println("This can not be its an error");
-        }
-        return events.add(event);
+         return this.events.add(event);
     }
 
     public boolean isComplete(){
@@ -43,11 +42,13 @@ public class StoreItem {
 
     public OcrReadyEvent finalise(){
         OcrReadyEvent event = new OcrReadyEvent();
+        String filerefs = events.stream().map(OcrReadyEvent::getFileRef).collect(Collectors.joining(","));
+        event.setFileRef(filerefs);
+        event.setTotal(this.totalMessages);
         event.setStatus(this.isComplete());
+        event.setPart(-1);
         return event;
     }
-
-
 
     public boolean hasExpired(){
         return System.currentTimeMillis() - this.creationTime > TTL_IN_MILS;
