@@ -48,6 +48,6 @@ spring:
 
 logging:
   level:
-    ROOT: ERROR
+    ROOT: INFO
     org.apache.kafka: ERROR
     com.ballaci: DEBUG
