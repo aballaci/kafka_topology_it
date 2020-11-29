@@ -1,2 +1,2 @@
-java.net.http not found
-project bytecode version 11 -> target 11
+Embeded Kafka integration test and topology test for custom Streams Transformer with in memory Keyvalue store.
+
