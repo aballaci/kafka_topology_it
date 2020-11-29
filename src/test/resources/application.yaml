@@ -9,18 +9,6 @@ spring:
          consumer:
           useNativeEncoding: true
       bindings:
-#        input:
-#          destination: ocr-ready
-#          content-type: application/json
-#        output:
-#          destination: ocr-aggregated
-#          content-type: application/json
-        process-in-0:
-          destination: ocr-ready
-          content-type: application/json
-        process-out-0:
-          destination: ocr-aggregated
-          content-type: application/json
         customaggregator-in-0:
           destination: ocr-ready
           content-type: application/json
