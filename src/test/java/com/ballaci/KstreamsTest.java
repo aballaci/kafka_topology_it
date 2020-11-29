@@ -1,9 +1,10 @@
 package com.ballaci;
 
+import com.ballaci.model.OcrAggregatedEvent;
 import com.ballaci.model.OcrReadyEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -27,14 +28,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+@Slf4j
 @ExtendWith(SpringExtension.class)
 @EmbeddedKafka(partitions = 1, topics = {"ocr-ready", "ocr-aggregated"})
 @SpringBootTest(properties = "spring.autoconfigure.exclude=org.springframework.cloud.stream.test.binder.TestSupportBinderAutoConfiguration")
@@ -50,10 +49,12 @@ public class KstreamsTest {
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Before
-    void setUp() {}
+    void setUp() {
+    }
 
     @After
-    void tearDown() {}
+    void tearDown() {
+    }
 
     @Test
     public void test() throws InterruptedException, ExecutionException {
@@ -61,26 +62,37 @@ public class KstreamsTest {
         Producer<String, OcrReadyEvent> producer = new DefaultKafkaProducerFactory<>(produserConfig, new StringSerializer(), new JsonSerializer<OcrReadyEvent>()).createProducer();
 
 
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref1", true, 1, 3))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref2", true,2, 3))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("ref3", true,3, 3))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref1", true,1, 3))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref2", true,2, 3))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("ref3", true,3, 3))).get();
-        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc3", new OcrReadyEvent("refx", true,1, 1))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc3", new OcrReadyEvent("doc3-ref1", true, 1, 1))).get();
+
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc4", new OcrReadyEvent("doc4-ref1", true, 1, 10))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc4", new OcrReadyEvent("doc4-ref2", true, 2, 10))).get();
+
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("doc1-ref1", true, 1, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("doc1-ref2", true, 2, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc1", new OcrReadyEvent("doc1-ref3", true, 3, 3))).get();
+
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("doc2-ref1", true, 1, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("doc2-ref2", true, 2, 3))).get();
+        producer.send(new ProducerRecord<String, OcrReadyEvent>(TOPIC_OCR_READY, "doc2", new OcrReadyEvent("doc2-ref3", true, 3, 3))).get();
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("my-test-consumer", "true", embeddedKafka));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
 
-        Consumer<String, OcrReadyEvent> consumer = new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new JsonDeserializer<>(OcrReadyEvent.class)).createConsumer();
+        Consumer<String, OcrAggregatedEvent> consumer = new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new JsonDeserializer<>(OcrAggregatedEvent.class)).createConsumer();
         consumer.subscribe(Collections.singleton(TOPIC_OCR_AGG));
-        System.out.println("In the test...");
-        Awaitility.await().timeout(5L, TimeUnit.SECONDS).untilAsserted(() -> {
-//            ConsumerRecord<String, OcrReadyEvent> message1 = KafkaTestUtils.getSingleRecord(consumer, TOPIC_OCR_AGG);
-            ConsumerRecords<String, OcrReadyEvent> messages = consumer.poll(Duration.ofMillis(100));
-            messages.forEach(m -> System.out.println(m.toString()));
-            assertThat(messages).isNotNull();
+        List<OcrAggregatedEvent> resultList = new ArrayList<>();
+        Awaitility.await().atMost(5L, TimeUnit.SECONDS).untilAsserted(() -> {
+            ConsumerRecords<String, OcrAggregatedEvent> messages = consumer.poll(Duration.ofMillis(500));
+            messages.forEach(m -> {
+                log.info(m.value().toString());
+                resultList.add(m.value());
+            });
+            assertThat(resultList).isNotEmpty();
+            assertThat(resultList.size()).isEqualTo(4);
+            assertThat(resultList.get(3).isStatus()).isFalse();
+            assertThat(resultList.get(3).getMessage()).isEqualTo("expired");
+
         });
     }
 
