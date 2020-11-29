@@ -25,6 +25,9 @@ spring:
           destination: ocr-ready
           content-type: application/json
           group: customaggregator-group
+        customaggregator-out-0:
+          destination: ocr-aggregated
+          content-type: application/json
       kafka:
           binder:
            brokers: ${spring.embedded.kafka.brokers}
