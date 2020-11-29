@@ -1,5 +1,6 @@
 package com.ballaci;
 
+import com.ballaci.model.OcrAggregatedEvent;
 import com.ballaci.model.OcrReadyEvent;
 import com.ballaci.model.StoreItem;
 import org.apache.kafka.common.serialization.Serde;
@@ -23,9 +24,20 @@ public final class CustomSerdes {
         }
     }
 
+    static public final class OcrAggregated extends Serdes.WrapperSerde<OcrAggregatedEvent> {
+        public OcrAggregated() {
+            super(new JsonSerializer<>(),
+                    new JsonDeserializer<>(OcrAggregatedEvent.class));
+        }
+    }
+
 
     public static Serde<OcrReadyEvent> OcrReadyEvent() {
         return new CustomSerdes.OcrReadyEventSerde();
+    }
+
+    public static Serde<OcrAggregatedEvent> OcrAggregatedSerde() {
+        return new CustomSerdes.OcrAggregated();
     }
 
     public static Serde<StoreItem> StoreItemSerde() {
