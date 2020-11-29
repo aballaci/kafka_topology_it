@@ -2,7 +2,7 @@ spring:
   cloud:
     stream:
       function:
-        definition: process;customaggregator
+        definition: customaggregator
       default:
          producer:
           useNativeEncoding: true
@@ -24,21 +24,12 @@ spring:
               configuration:
                 default.key.serde: org.apache.kafka.common.serialization.Serdes$ByteArraySerde
                 default.value.serde: com.ballaci.CustomSerdes$OcrReadyEventSerde
-              functions.customaggregator.groupId: customaggregator
+              functions.customaggregator.groupId: customaggregator-group
               functions.process.groupId: proccessor
-  kafka:
-    consumer:
-      properties:
-        spring.json.trusted.packages: "*"
-
-
-    producer:
-      properties:
-        spring.json.add.type.headers: false
 #debug: true
 
 logging:
   level:
-    ROOT: INFO
+    ROOT: ERROR
     org.apache.kafka: ERROR
-    com.ballaci: DEBUG
+    com.ballaci: TRACE

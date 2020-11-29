@@ -1,8 +1,7 @@
-package com.ballaci.consumer;
+package com.ballaci.processors;
 
 import com.ballaci.CustomSerdes;
 import com.ballaci.model.OcrReadyEvent;
-import com.ballaci.processors.OcrEventTransformer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Named;

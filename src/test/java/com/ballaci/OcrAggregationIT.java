@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EmbeddedKafka(partitions = 1, topics = {"ocr-ready", "ocr-aggregated"})
 @SpringBootTest(properties = "spring.autoconfigure.exclude=org.springframework.cloud.stream.test.binder.TestSupportBinderAutoConfiguration")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class KstreamsTest {
+public class OcrAggregationIT {
 
     private static final String TOPIC_OCR_READY = "ocr-ready";
     private static final String TOPIC_OCR_AGG = "ocr-aggregated";
