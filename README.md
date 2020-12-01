@@ -1,4 +1,4 @@
-# Message aggregation through the low level Processor API 
+# Message aggregation with Streams Processor API 
 
 ## Problem description
 
