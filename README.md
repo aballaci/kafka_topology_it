@@ -1,4 +1,4 @@
-1. Analysis of a solution for Message aggregation through the low level Processor API 
+# Message aggregation through the low level Processor API 
 
 ## Problem description
 
